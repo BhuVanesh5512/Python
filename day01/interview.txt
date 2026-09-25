@@ -1,0 +1,58 @@
+1.What is the difference between:
+Python general-purpose programming language
+interpreter is where Python code executed
+script is file where code stored
+module reusable code file
+package collection of modules
+
+2.What does this mean?python -m venv .venv
+python → run python
+-m → runs python module
+venv → built-in virtual-environment module
+.venv → directory
+Use this Python interpreter to execute the venv module and create an isolated environment in .venv.
+
+3.Why do we use virtual environments?
+A virtual environment isolates a project's Python interpreter and installed dependencies, reducing dependency conflicts between projects.
+
+4.What is pip?
+it's the standard package-management tool commonly used to install Python packages.
+
+5.Why shouldn't we blindly install every package globally?
+Global installation can cause dependency conflicts.
+
+6.What does this do? import sys
+sys provides access to variables and functions related to the Python runtime and the environment in which Python is running
+
+7.What is the difference between:print("hello") & name = "hello" print(name) ?
+The first directly sends a value to output. 
+the second "hello"-->stored/referenced by-->name-->print(name)-->output
+
+8.What does this give us?sys.executable
+sys.executable gives you the path to the Python interpreter executable that is currently running your program.
+
+9. Why shouldn't .venv be committed to Git?
+It's a local, machine-specific environment; the project code and dependency description are what we track.
+The reason we don't commit .venv is that the virtual environment contains the actual installed Python environment and can be large, machine-specific, and reproducible elsewhere.
+Git stores our project. requirements.txt describes dependencies. .venv is the our local environment we created with given dependencies.
+
+10.why variables and not direct printing to information?
+Variables give meaningful names to data.
+is much more meaningful than repeatedly using same information again and again , we can just give a variable 
+and can change it if need neither than going to each line
+
+
+
+======================
+.gitignore
+    ↓
+tells Git what NOT to track
+
+requirements.txt
+    ↓
+describes project dependencies
+
+.venv
+    ↓
+actual isolated local environment
+========================
