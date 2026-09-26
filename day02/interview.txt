@@ -1,0 +1,71 @@
+1.What is dynamic typing in Python?
+my answer : In python, we not need to declare type of object it assign it in runtime so, it dynamic typing 
+profession interview answer :
+Python is dynamically typed because names do not need an explicit type declaration, and the type of the object they refer to is determined at runtime.
+
+2.What is the difference between a variable and an object?
+my answer : In python, variable is name refers towards object where as object is like we work in python which has type, id, value.
+profession interview answer :
+A name that refers to an object.A runtime entity that has identity, type, and value/state.
+
+3.What does type() do?
+my answer : it specifies the datatype of the object we looking
+profession interview answer :
+example : type(x) ->Returns the type/class of the object referenced by x.
+
+4.What does id() do?
+my answer : id is like memory identity during an object lifetime
+profession interview answer :
+id() returns an integer identifying an object during its lifetime.
+
+5.Difference between: a==b and a is b?
+my answer : a==b sees the equality where as a is b sees the identity
+profession interview answer 
+
+6.What is mutable vs immutable?
+my answer : mutable is object which can be changed where as immutable is which cannot be changed 
+profession interview answer :
+mutable :object can be modified example : list , dict, set
+immutable :object cannot be modified after creation.example : int, float, str, bool, tuple
+
+7.Why do we generally use: x is None instead of : x==None?
+my answer : we use x is None because 'None' is a singleton identity value.
+profession interview answer : None is a singleton object.is the idiomatic check.
+None-->one specific singleton object
+
+8.What happens conceptually here? x=10 x=y x=20?
+my answer : x is allocated/refers to object 10 and y also allocated/refers to object 10 with help of x and x is allocation/reference changed to 20 here we can say x=20, y=10.
+profession interview answer :
+x refers to the integer object 10.then y refers to same integer object 10 and after x reference changed to integer object 20.
+
+9.Why can this be dangerous?a = [1, 2, 3] b = a b.append(4)?
+my answer : As list is mutable data type a and b are equal in this case so may effect when we think a is [1,2,3] 
+profession interview answer :
+here,  a and b refers to same object so, modifying b changes the modifies the object itself that's why mutation through b is visible through a.
+
+
+10.Explain this:
+x = 10   y = x x = 20
+using :variable->reference->object->type->value
+i. What object is created?
+my answer : first 10 value object is created with refer x than it also refer to y with x and then x is reassigned with 20 object to create it
+
+ii.What does x refer to? 
+my answer : 20
+profession interview answer :
+
+iii. What happens when y = x?
+my answer : here y starts refers to 10 value object
+profession interview answer :
+
+iv.What happens when x = 20?
+my answer: x refer reassigned to 20 value object
+profession interview answer :
+
+v.What value does y have afterward?
+my answer : y refers to integer objet 10 
+profession interview answer :
+
+vi.Does y change?Why?
+my answer : y remains 10 , doesn't change because of two reasons 1.int type is immutable 2. x is just reassigned and now it doesn't refer to 10 but y is still referring to it.
+profession interview answer :
