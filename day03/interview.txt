@@ -1,0 +1,38 @@
+1.What is the difference between: = and ==?
+my answer : '=' is used for assignment where as '==' is a comparison operator (equalizer)
+
+2.What does this produce?range(2, 10, 2)?list every value
+my answer : numbers from 2 t0 9 with step 2 -2,4,6,8
+
+3.Explain the difference between:break, continue,pass
+my answer : break stop the execution of loop at that condition, continue skips the particular condition loop flow, pass does nothing (it is used as substitute for future statement)
+profession answer :
+break : Immediately exits the entire loop.
+continue : Skips the remaining code in the current iteration and starts the next iteration.
+pass : Does nothing; it is a syntactic placeholder.
+
+4.What is wrong with this code?i = 1 while i <= 5:print(i) ?Why does it never terminate?
+my answer : this code causes infinite loop because there is no increment or updating statement at end so it never terminates
+#Every while loop needs a path toward making its condition false.
+
+Predict the exact output:for i in range(1, 6):if i == 3:continue print(i)
+my answer : this gives 1,2,4,5
+
+Suppose an ML model produces these scores:scores = [0.2, 0.8, 0.4, 0.95, 0.6] ?Write a loop that prints only scores greater than or equal to 0.7.
+my answer : 
+for i in scores:
+    if(i>=0.7):
+        print(i,end=" ")
+
+high_scores = []
+for score in scores:
+    if score >= 0.7:
+        high_scores.append(score)
+
+print(high_scores)
+
+7.Explain if/elif/else execution as if you were teaching another beginner.
+my answer : this a like decision statement from real world
+if condition executes only when condition is true , condition is false then python check in elif condition is true executes it , condition is false then else is executed
+there is no need that if need elif or else 
+#In one if/elif/else chain, at most one branch executes.
