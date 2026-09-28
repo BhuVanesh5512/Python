@@ -6,3 +6,6 @@
 
 --Day03 : how python decides, conditions - if,if else,if elif else, loops - for, while ,Nested flows ,
 break, continue, pass.
+
+--Day04 : what are strings, indexing, slicing, string methods like split , lower, join, upper, strip ...
+learned some foundation for normalization and preprocessing of text 
