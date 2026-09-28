@@ -1,0 +1,7 @@
+1.What is wrong with this code?text = "Python" text[0] = "J" print(text)
+i.What error/concept is involved?
+ii.Why does it happen?
+iii.How would you create "Jython" correctly?
+my answer : Python raises a error because string are immutable object in python we can only create but not modify
+I would create using replace method
+text = text.replace("P","J")
