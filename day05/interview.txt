@@ -1,0 +1,96 @@
+1.What is the difference between: a.append([3, 4]) and a.extend([3, 4])
+my answer : append adds it as one element whereas extend iterate over it and adds the element in list 
+
+2.What happens here?a = [1, 2, 3] b = a  b.append(4)
+my answer : both a and b are updated as [1,2,3,4] because they are reference of shared list object
+professional answer : a and b are names bound to the same list object. append() mutates that shared list object.
+
+3.What is the difference between: b = a , b = a.copy()
+my answer : b = a makes references to share single object whereas b = a.copy() makes a new object to b with a object values in it
+#copy() creates a shallow copy, not necessarily a completely independent deep structure.
+
+4.Why does this fail?point = (10, 20) point[0] = 100 But this works: point = (100, 20)
+my answer : it is tuple and it is immutable but doesn't mean we cannot  bind to other object so second part work and first part fails
+
+
+5.Why does this fail? s = {[1, 2], [3, 4]} But this works? s = {(1, 2), (3, 4)}
+my answer : set can contains different elements but not list because list is mutable so there is no fixed hashvalue , set only accepts hashable elements and some tuple is hashable element
+so second part works (second has hashable tuple) and first doesn't 
+#A tuple is hashable when all of its elements are hashable.
+
+6.What is the difference between: person["salary"] and person.get("salary") when "salary" doesn't exist?
+my answer : both are dictionary retrieval methods first one expects this key to exist ; so it rises a keyerror when key is missing 
+second one is like if available retrieve or none or any given values
+
+7.What do these produce?for x in person: and for x in person.values(): and for x in person.items():
+my answer : first produces keys in dictionary,
+second produces values in person dictionary, 
+third produces both key and values in dictionary
+
+
+8.Collection choice
+Give the appropriate collection:
+
+Ordered values, duplicates allowed → ?
+list
+Key → value relationship → ?
+dictionary
+Unique values + membership → ?
+set
+Fixed immutable sequence → ?
+tuple
+
+9.for -
+student = {
+    "name": "Alice",
+    "skills": ["Python", "SQL"]
+}
+What does this return? student["skills"][1]
+my answer :"SQL"
+
+10.Write a short program that takes:
+students = [
+    {"name": "Alice", "skills": ["Python", "SQL"]},
+    {"name": "Bob", "skills": ["Python", "Docker"]},
+    {"name": "Rahul", "skills": ["Python", "SQL", "Docker"]},
+]
+
+my answer : 
+s = set()
+for student in students:
+    for skill in student["skills"]:
+        s.add(skill)
+
+print(s)
+
+
+
+
+''' LIST
+ordered
+mutable
+duplicates allowed
+indexing
+append / extend
+        ↓
+
+TUPLE
+ordered
+immutable
+indexing
+unpacking
+        ↓
+
+SET
+unique elements
+membership
+set operations
+elements must be hashable
+        ↓
+
+DICT
+key → value
+keys unique + hashable
+mutable
+[] / get()
+keys / values / items '''
