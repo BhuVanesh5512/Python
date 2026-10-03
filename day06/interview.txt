@@ -1,0 +1,40 @@
+1. What is the difference between: [x * 2 for x in numbers] and {x * 2 for x in numbers}
+my answer :[x * 2 for x in numbers] gives a list object  of numbers element doubles in order with duplicates
+{x * 2 for x in numbers} gives a set object of numbers elements doubles without duplicates
+professional answer :
+[x * 2 for x in numbers] creates a list containing the transformed values in iteration order, and duplicate values are allowed.
+
+{x * 2 for x in numbers} creates a set containing the transformed values, so duplicate values are removed.
+
+
+2.what is the difference between : [x for x in numbers if x > 5] and [x if x > 5 else 0 for x in numbers]
+my answers : [x for x in numbers if x > 5] gives a list object of numbers element which are filter bt condition of if.
+[x if x > 5 else 0 for x in numbers] gives a list object of numbers elements, here we iterate over every element and base on condition awards what value to be in list
+#The first can remove elements; the second produces one output for every input element.
+professional answer :
+[x for x in numbers if x > 5] is a filtering comprehension. It keeps only the elements that satisfy the condition, so some input elements may be excluded.
+
+[x if x > 5 else 0 for x in numbers] processes every element and chooses which value to produce based on the condition. Therefore, every input element produces one output element.
+
+3.Convert this into a normal for loop:result = [user["name"] for user in users if user["active"]]
+my answer : result = []
+for user in users:
+    if user["active"]:
+        result.append(user["name"])
+
+
+4.What does this produce?result = [skill for user in users for skill in user["skills"]]
+my answer : list object which contain user skills in it ,duplicates allowed
+professional answer : creates a flat list containing every skill from every user
+
+5.What's wrong here?
+names = [
+    user["name"]
+    for user in users
+    if user["age"] >= 18
+    for user in users
+]
+
+my answer : here we get list object with names but filter is like how many did names need to be printed if condition is true 1 time all the name are printed only and so on because of second for loop in iterate process.it is like it is in condition of if
+
+#the inner loop overwrites the current user binding for the expression.the result can contain many repeated names, depending on how many users satisfy the age condition.
