@@ -12,3 +12,5 @@ learned some foundation for normalization and preprocessing of text.
 
 --Day05 : what is collection, List, Tuple, Set, Dictionary.important methods , what is mean by hashable
 importance of collections for accessing where to use each collection.
+
+--Day06 : Python Comprehensions - list, set, dictionary, tuple generator ;filtering, transforming, nested
