@@ -1,0 +1,125 @@
+1.What is the difference between:parameter argument return
+my answers :
+parameter : parameter are name placeholder which are defined with function
+argument : arguments are values/name references of value object  which we supplied to function
+return : keyword which help to return to function call 
+professional answer :
+Parameter: a named placeholder defined in a function definition.
+Argument: the actual value/object supplied when the function is called.
+Return: the return statement sends a value from the function back to the caller and immediately exits that function.
+
+
+2. Why is this better?def calculate_average(numbers): or def calculate_average() : numbers = get_number_list()
+my answer : def calculate_average(numbers) is better, function is reuseable,simple code.we need to provide the required input rather than it reaching it self.we need make sure it does single task rather than many at itself
+#The function should receive what it needs rather than reaching out to obtain it. And: A function should have a single clear responsibility.
+
+3.What does LEGB stand for?
+my answer :
+L is refers to local scope of variable
+E is for enclosed/enclosing scope of variable where function in function exists
+G is global scope of variable
+B is for built-in scope
+first python looks at local scope for variable/object then enclosed then global at last in built-in
+
+4.Explain the difference between:numbers.append(4) and numbers = numbers + [4] when numbers is a list passed into a function.
+my answer : append modifies the same shared list , where as + here forms the rebinding new list object
+
+5.*args What does this do?def process(*values):;And what is the type of values?
+my answer : *args is used when we can't define how many positional parameters are given to function ;
+* args helps us to store the positional arguments passed in tuple 
+type of values is tuple
+professional answer :
+Collect all positional arguments supplied to the function into the tuple values
+
+6.**kwargs  What does this do? def process(**options): And what is the type of options?
+my answer : **kwargs is used when we are many named parameters and when we want use parameter refered named keys in function, 
+function takes the arguments passed as key - value pair dicts using **kwargs
+type of options is dict 
+professional answer :
+Collect all keyword arguments supplied to the function into the dictionary options.
+
+7.Explain the difference between:def test(*values):test(*numbers)
+my answer : def test(*values) here we are defining a function with *args for positional parameters to get many or limited or none arguments
+test(*numbers) here we are unpacking a list to pass in like flexible positional arguments and form tuple through *values
+#The function's *values parameter collects the unpacked arguments into a tuple.
+
+8.What does this mean?def train(data, *, epochs=10):
+my answer : * tells us we need pass only keyword arguments after it
+
+9.Why should a calculation function generally return a value rather than print it?
+my answer : print limits ways and operations of result to display only, return is used because we can use result in multiple ways
+
+
+10.Give me one realistic example where **kwargs could be useful in an AI/ML system.
+my answer : when the keywords or named references gives more information than a mere positional argument
+#**kwargs is useful when a function needs a flexible set of named configuration options.
+'''
+def generate_response(prompt, **config):
+    ...
+
+then generate_response(
+    "Explain neural networks",
+    temperature=0.7,
+    max_tokens=500
+)
+inside function : config
+{
+    "temperature": 0.7,
+    "max_tokens": 500
+} 
+'''
+
+
+#Functions should generally receive data, process it, and return a result. They shouldn't unnecessarily control where the data comes from or how the result is displayed.
+
+''' 
+print()
+   ↓
+display result
+
+return
+   ↓
+give result back to program
+   ↓
+store / compare / transform / pass elsewhere / print / test
+'''
+'''
+FUNCTION
+│
+├── parameter
+│      ↓
+│   placeholder
+│
+├── argument
+│      ↓
+│   actual supplied value
+│
+├── return
+│      ↓
+│   sends result back to caller
+│
+├── scope
+│      ↓
+│   LEGB
+│
+├── mutation
+│      ↓
+│   changes existing object
+│
+├── reassignment
+│      ↓
+│   changes name → object binding
+│
+├── *args
+│      ↓
+│   positional → tuple
+│
+├── **kwargs
+│      ↓
+│   keyword → dict
+│
+└── *
+       ↓
+   definition = collect
+   call       = unpack
+'''

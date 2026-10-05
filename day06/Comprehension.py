@@ -27,3 +27,6 @@ print(f"active users : {active_users}")
 print(f"skills : {skills}")
 print(f"active users above 25 : {active_users_25_plus}")
 
+n = int(input("Enter number of elements to store in list : "))
+user_list = [int(input()) for _ in range(n)]
+print(f"user_list by comprehension : {user_list}")
