@@ -16,3 +16,6 @@ importance of collections for accessing where to use each collection.
 --Day06 : Python Comprehensions - list, set, dictionary, tuple generator ;filtering, transforming, nested
 
 --Day07 : Python Functions - how functions are defined , parameters and arguments, LEGB scope, *args and **kwargs, unpacking *
+
+--Day08 : Python Function design with Exceptions and files; try/except/else/finally, with open(), ValueError, TypeError
+FileNotFoundError...
