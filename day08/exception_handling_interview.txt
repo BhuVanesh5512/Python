@@ -1,0 +1,96 @@
+1.What is the exact output? Why?
+def divide(a, b):
+try: return a / b
+except ZeroDivisionError: return None
+print(divide(10, 0))
+my answer : None ,ZeroDivisionError is caught in except block
+
+2.For each call, identify the exception:int("25"),int("abc"),"10" + 5 ;And explain the difference between ValueError and TypeError in your own words.
+my answer : int("25")->25,int("abc")->ValueError,"10" + 5 ->TypeError
+valueError is expected when type is convertible but value is not acceptable
+typeError is expected when two type is not accepted in operation
+
+3.exact output?why "Age:" does not print
+def validate_age(age):
+    if age < 0:raise ValueError("Age cannot be negative")
+    return age
+try:result = validate_age(-5) print("Age:", result)
+except ValueError as error:print("Error:", error)
+my answer : Error: Age cannot be negative ; age failed to match the required condition and fall to valueError in validation_age function
+
+4.What is the exact output?
+try:number = int("20")
+except ValueError:print("Invalid")
+else:print("Valid:", number)
+finally:print("Finished")
+my answer : Valid: 20
+Finished
+
+5.Trace And give the exact output.
+def inner():raise ValueError("Something went wrong")
+def middle():return inner()
+try:result = middle() print("Result:", result)
+except ValueError as error: print("Caught:", error)
+my answer : inner() ->ValueError->try block stops->except catches the ValueError->outputs
+Caught:Something went wrong
+
+6.Give the complete execution trace and output
+def parse_score(data):
+    try:return int(data)
+    except ValueError:raise ValueError("Invalid score")
+def validate_score(score):
+    if not 0 <= score <= 100:raise ValueError("Score must be between 0 and 100")
+    return score
+def process_score(data):
+    score = parse_score(data)
+    return validate_score(score)
+try:result = process_score("150")print("Result:", result)
+except ValueError as error:print("ValueError:", error)
+finally:print("Finished")
+my answer : "150"->parse_score("150")->try succeeds ->score = 150->validate_score(150)->if condition true -> ValueError raised -> 
+->outer except catches it->prints ValueError:Score must be between 0 and 100->finally block executes
+output:
+ValueError:Score must be between 0 and 100
+Finished
+
+7.Which version is better for a calculation function, and why?
+A.def calculate_average(numbers):
+    if not numbers:return None
+    return sum(numbers) / len(numbers)
+B.def calculate_average(numbers):
+    if not numbers:raise ValueError("numbers cannot be empty")
+    return sum(numbers) / len(numbers)
+my answer : B, it raises the specific error ; sometimes None is better in some results
+professional answer :
+None means:"There is no result."
+raise ValueError(...) means: "The caller supplied invalid input, so this operation cannot be performed."
+
+
+'''
+ValueError
+→ correct general type, unacceptable value
+
+TypeError
+→ inappropriate type for the operation
+
+return
+→ successful result / normal function exit
+
+raise
+→ signal failure / abnormal exit
+
+try
+→ code that might fail
+
+except
+→ handles a matching exception
+
+else
+→ runs only when try succeeds
+
+finally
+→ runs regardless of success/failure
+
+exception propagation
+→ exception travels up the call stack until handled
+'''

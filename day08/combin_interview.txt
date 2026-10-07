@@ -1,0 +1,161 @@
+1.Why is this:
+with open("data.txt", "r", encoding="utf-8") as file:content = file.read() (preferred over)
+file = open("data.txt", "r") content = file.read() file.close()
+What does with actually help us with?
+my answer :
+with checks and automatically close the file after the block of execution completed or even the exception occurred
+where as manually coded file.close won't run when the exception is raised before it
+
+2.Explain the difference between: r, w, a, x and What happens if data.txt already contains 100 lines and you open it using "w"?
+my answer : 
+r - used for read from the cursor point in file and used for all read operations
+w - overwrites and updates the file contents and used for write operations
+a - point the cursor at end of content and appends the new content at the end
+x - create the file if it not exists already
+all 100 lines of content is overwritten
+
+3.Suppose data.txt contains:
+10
+20
+30
+What is the value of:with open("data.txt", "r", encoding="utf-8") as file data = file.readlines()
+my answer:['10\n','20\n','30\n']
+
+4.Why is this potentially wrong?file.writelines(["10", "20", "30"]),What could the file contain afterward?How would you write the values on separate lines?
+my answer: file contain : 102030
+because writelines does not take \nor separators on there own 
+I write it as file.writelines(x+"\n" for x in ["10","20","30"])
+
+5.Explain the difference between:ValueError TypeError FileNotFoundError
+my answer : 
+valueError is expected when type is acceptable for operation but value is not acceptable
+typeError is expected when type is not accepted in operation
+FileNotFoundError is expected when file does not found in path specified
+
+6.Predict the Output
+def save_data(filename, data):
+    if not data: raise ValueError("Data cannot be empty")
+    with open(filename, "w", encoding="utf-8") as file:file.writelines(str(x) + "\n" for x in data)
+    return "Saved"
+def read_data(filename):
+    with open(filename, "r", encoding="utf-8") as file:lines = file.readlines()
+    return [int(line.strip()) for line in lines]
+try:
+numbers = [10, 20, 30]
+result = save_data("numbers.txt", numbers)
+print(result)
+numbers = read_data("numbers.txt")
+print(numbers)
+except ValueError as error:print("ValueError:", error)
+except FileNotFoundError:print("File not found")
+What exactly will be printed?Write the output in order.
+my answer :
+Saved
+[10,20,30]
+
+7.Predict the output:
+def parse_score(data):
+    try:return int(data)
+    except ValueError:raise ValueError("Invalid score")
+def validate_score(score):if not 0 <= score <= 100:raise ValueError("Score must be between 0 and 100")
+    return score
+def process_score(data):score = parse_score(data)
+    return validate_score(score)
+try:result = process_score("150")
+    print("Result:", result)
+except ValueError as error:print("Caught:", error)
+finally:print("Finished")
+Then explain the exact exception path.?
+my answer :"150"->parse_score()->150->validate_score()->valueError passes->process_score raise value_error in try block stops->except of valueError caught's  it ->error message & finally printed
+
+
+8.
+def save_scores(filename, scores):
+    with open(filename, "w", encoding="utf-8") as file:file.writelines(str(scores) + "\n")
+def read_scores(filename):
+    with open(filename, "r", encoding="utf-8") as file: lines = file.readlines()
+    return [int(line.strip()) for line in lines]
+scores = [10, 20, 30] save_scores("scores.txt", scores) result = read_scores("scores.txt") print(result) but their program crashes. expected [10, 20, 30]
+Identify the bug.
+Explain what actually gets written into the file.
+Then fix save_scores().
+my answer :
+
+first save_score executes successfully but there one literal list is written to file
+in read raises valueError because literal is acceptable type for operation for value is not
+file.writelines(str(score) + "\n" for score in scores) this will fix and get expected value
+
+Create three functions:parse_scores(data) validate_scores(scores) process_scores(data)
+my answer
+def parse_scores(data):
+    try:
+        numbers = [int(x.strip()) for x in data.split(",")]
+        return numbers
+    except ValueError :
+        raise ValueError("Scores must contain integers")
+
+def validate_score(score_list):
+    if not score_list:
+        raise ValueError("Scores cannot be empty")
+
+    for score in score_list:
+        if not 0 <= score <= 100:
+            raise ValueError("Score must be between 0 and 100")
+    return score_list
+
+def process_score(data):
+    numbers = parse_score(data)
+    return validate_score(numbers)
+
+10.combined program 
+my answer :
+def save_scores(filename, scores):
+    with open(filename, "w", encoding="utf-8") as file:
+        file.writelines(str(score) + "\n" for score in scores)
+        return "successfully saved"
+def read_scores(filename):
+    with open(filename, "r", encoding="utf-8") as file: 
+        lines = file.readlines()
+        return [int(line.strip()) for line in lines]
+
+def parse_scores(data):
+    try:
+        numbers = [int(x.strip()) for x in data.split(",")]
+        return numbers
+    except ValueError :
+        raise ValueError("Scores must contain integers")
+
+def validate_scores(score_list):
+    if not score_list:
+        raise ValueError("Scores cannot be empty")
+    for score in score_list:
+        if not 0 <= score <= 100:
+            raise ValueError("Score must be between 0 and 100")
+    return score_list
+
+def process_score(data):
+    numbers = parse_score(data)
+    return validate_score(numbers)
+
+try :
+    data = "45, 67, 89, 100"
+    scores = process_score(data)
+    print(save_scores("scores.txt",scores))
+    print("Scores : ",read_scores("scores.txt"))
+except ValueError as error:
+    print("Error: ",error)
+except FileNotFoundError:
+    print("File does not exist")
+    
+9.Imagine you're building an ML system.You receive:"23, 45, 67, 91"Why is it useful to 
+separate:parsing,validation,saving,reading ,processing instead of putting everything into one giant function?
+my answer : As general , It make easy to debug
+actually functional are designed to reuseable, simple to understand and need to have simple structure input->one operation->output
+rather than multiple; if multiple it make function complex ; so, making pure function is known good habit of developers.
+when predictions are wrong, you don't know whether the problem came from as of aiml
+professional answer :
+1. Debugging :You can isolate exactly where bad data enters the pipeline.
+2. Testing : You can test without involving files or models.
+3.Reusability : The same validation function can be used by training, evaluation, and inference pipelines.
+4. Separation of concerns :Each function has one clear responsibility.
+
