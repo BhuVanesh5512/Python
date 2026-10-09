@@ -1,0 +1,145 @@
+1. If main.py imports calculator, why does "Calculator loaded" print, but "Running calculator directly" does not?
+my answer :imported calculator is directly referred to namespace in current module and some top-level code (print statement) in
+calculator directly print when main.py executed which are not mention under  __name__ in calculator module.
+#print("Calculator loaded") is not outside the __name__ variable. It is simply a top-level statement that executes when the module is loaded.
+#Top-level code runs during module execution; the __name__ guard controls whether its indented block runs.
+
+2. If you remove as calc and write import calculator, what should you change in the function call?
+my answer : we are using alias in calling function as alias.function_name() , 
+Now we use module_name.function_name() so, here we use calculator.function_name()
+
+3. What is the difference between return a + b and print(a + b) inside add()?
+my answer : return sends the result to function call for further operations and we may do many operation with returned result
+whereas , print() used to display directly so, usage of result is reduced 
+#return makes a result available to the caller for further computation, whereas print() displays information.
+
+4. What is the difference between a Python module and a package?
+my answer: module is a reusable code file which is used in another file , it contain reusable function  in it
+package is organized collection of modules 
+#A module doesn't have to contain functions. It can also contain classes, variables, and executable statements. A package can contain subpackages as well as modules.
+profession answer : A Python module is a unit of code that can be imported, usually represented by a .py file. 
+A package organizes related modules and subpackages under a common namespace.
+
+5.What name becomes available in the current module after `import calculator as calc`?Explain what happens to the names calculator and calc.
+my answer :calc which is referring to module calculator namespace. calculator original name of file is not rewritten it just referred as calc in current file name space
+profession answer : calc refers to the module object, and add is looked up in that module's namespace.
+
+6.Explain the difference between `import calculator` and `from calculator import add`.
+my answer : when we import calculator , calculator directly refers the module in current module namespace and we can access module functions with module_name.function_name() like calculator.add(a,b) 
+whereas, here in from calculator import add, add function in calculator module is directly referred in current module name space  so, we can use with function name itself like add(a,b)
+#The second import binds the name add to the function object. It doesn't create a separate copy of the function.
+
+7. What is the purpose of `if __name__ == "__main__":`?Explain what happens when the file runs directly versus when it is imported.
+my answer :__name__ == "__main__" directly referred to current python file , when it is import it is changed into __name__ == "module_name/alias given" ; 
+here condition implies only execute the below code when current file executing is it itself is __main__ not imported 
+#the guard lets code run only when the module is executed as the main program.The import alias does not determine __name__. Python sets __name__ according to how the module is executed or identified.
+
+8. What is a `.pyc` file, and how is Python bytecode different from machine code?Explain what the cache is used for.
+my answer : .pyc is a python bytecode file which has compiled module cache in it 
+bytecode - is compiled code of python which can directly interpreted by python
+machine code - this are native instructions which are executed directly in machine
+profession answer :
+.pyc file: Stores cached Python bytecode, usually under __pycache__/. It can save Python from having to recompile unchanged source on a subsequent import when the cache is valid.
+Bytecode: Instructions for the Python virtual machine. It is not the same as native machine code.
+Machine code: Native instructions executed by a processor.
+Python source → compilation → bytecode → Python runtime executes bytecode
+
+9.Predict the output when `python main.py` runs.
+1.# calculator.py                    
+print("A")                           
+def greet():
+    print("B")
+if __name__ == "__main__":
+    print("C")
+    greet()
+
+# main.py
+import calculator
+print("D")
+calculator.greet()
+my answer : A 
+D 
+B
+2.What is wrong with this code?Identify the error and write the corrected line.
+# all_modules.py
+import math_utils as m
+
+# main.py
+import all_modules as im
+print(im.math_utils.add(2, 3))
+my answer :the code prints error attribute error math_utils is not found in im 'all_modules' because the module is referred as m in all_modules namespace. 
+print(im.m.add(2,3))
+
+3.Explain the difference between these two imports.explain which name is bound and how you call clean_text().
+from preprocessing import text
+from preprocessing.text import clean_text
+my answer : 
+from preprocessing import text : here text module object reference is bound directly in current module from this import and we access clean_text function in text module with
+text.clean_text()
+from preprocessing.text import clean_text : here clean_text function is directly bound in current module so, we can use clean_text function directly clean_text()
+here trace preprocessing(package)->text(module)->clean_text(function)<-clean_text<-main.py
+
+4.What happens if you delete the `__pycache__` directory?Explain whether your Python source code is deleted and what may happen on the next import.
+my answer : it doesn't impact the source code file and in next import python may create another (if deleted only) if required.it is created for optimizing the loading of module in current file without recompiling
+
+5.A module contains `print("Loaded")` at the top level and defines `def process(): print("Processing")`. What prints when another file imports the module but never calls `process()`?
+my answer :Loaded 
+it is printed due to import of module. top-level is executed when current file executed . current file gets the bound reference of module in it so top-level code is always executed with it
+#Python executes the module's top-level statements as part of loading it; the importing module then has access to the imported module object.
+
+10.
+1.Write a safe main guard.
+Write the exact Python syntax that calls main() only when the file is executed as the main program. Assume main() has already been defined.
+my answer : if __name__ == "__main__" : main()
+
+2.Debug this code.
+import calculator as calc
+print(calculator.add(2, 3)) What error occurs, and what is the smallest correction?
+my answer :
+name error
+print(calc.add(2,3))
+#The precise error is generally NameError, because the name calculator was not bound in the current module by that import statement. The imported module was bound to calc
+
+3.Explain this package structure.
+project/
+├── main.py
+└── preprocessing/
+    ├── __init__.py
+    ├── text.py
+    └── numbers.py     Identify the package and both modules. What role does __init__.py commonly play?
+my answer :
+Preprocessing -Package 
+modules - text.py and numbers.py 
+__init__.py is a code file used for making regular packages and contain package initiation code
+#It commonly initializes a package and can contain package-level setup or expose selected names. 
+#In a conventional package, it marks the directory as a regular package; 
+#Python also supports namespace packages without an __init__.py file.
+
+4.Why is this pattern useful?
+def main():
+    print("Application started")
+
+if __name__ == "__main__":
+    main()
+
+Give two practical benefits of using this pattern.
+my answer :
+only run when current module executes
+it is ignored when current module is imported in other file
+profession answer :
+1.Prevents unwanted execution during imports. 
+Another module can import your functions without automatically starting your application.
+2.Separates reusable code from application startup. 
+You can define functions and classes separately from the code that launches the application, making testing and maintenance easier.
+
+
+5.Write a tiny two-file example.
+Describe or write calculator.py with add(a, b), and main.py importing it as calc and printing the sum of 8 and 12. Include a main guard in calculator.py that prints a message only when calculator.py runs directly.
+calculator.py 
+def add(a,b):
+        return a+b
+if __name__ == "__main__" :
+        print("This run when calculator.py runs directly")
+main.py
+import calculator as calc
+print(calc.add(8,12))
