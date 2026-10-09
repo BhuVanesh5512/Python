@@ -19,3 +19,6 @@ importance of collections for accessing where to use each collection.
 
 --Day08 : Python Function design with Exceptions and files; try/except/else/finally, with open(), ValueError, TypeError
 FileNotFoundError...
+
+--Day09 : In Python, what is modules, packages. their structure. __init__, __name__,__main__, safe guard of module,
+__pycache__,.pyc; bytecode, machine code difference 
