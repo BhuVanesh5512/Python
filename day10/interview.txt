@@ -1,0 +1,191 @@
+1.code:
+class AIModel:
+    def run(self):
+        return "General"
+
+class TextModel(AIModel):
+    def run(self):
+        return "Text"
+
+class EmbeddingModel(AIModel):
+    def run(self):
+        return "Embedding"
+
+def execute(model):
+    return model.run()
+
+i.Why can execute() handle both TextModel and EmbeddingModel without using if/elif?
+my answer : execute is polymorphic trait which doesn't care about concrete class . ducktyping .
+#This function can work with any object that provides a compatible run() method.
+'''Polymorphism is the broader concept: the same interface, run(), can produce different behavior for different objects. 
+Duck typing is the approach of relying on the operations an object supports rather than requiring a particular class or inheritance relationship.
+'''
+
+ii.What is the difference between inheriting run() and overriding run()?
+my answer : 
+inheriting run() : taking the exact parent method
+overriding run() : change the parent method as it's method and changing implementation it as required to class of child.
+professional answer :
+Inheriting: A child can use the parent's method without defining it again.
+Overriding: A child defines its own method with the same name, replacing the inherited implementation for that child.
+#The parent implementation can still be called when appropriate, including through super().
+
+iii.If TextModel defines __init__(self, name) and calls super().__init__(name), what is the purpose of that call?
+my answer : it helps reuses the parent behavior and subtype relationship in child
+#super() delegates method lookup to the next class in the method resolution order (MRO).
+#This reuses the inherited initialization logic. It doesn't automatically initialize every possible attribute; the initializer must explicitly establish the object's state.
+
+iV.An AIApplication stores a model in self.model and calls self.model.run(). Why is this composition, and how does it support flexible design?
+my answer : it is used to run multiple modes with one class by holding the reference of object.AIApplication uses self.model and gets the passes instance to model and executes the run() method.
+#self.model holds the reference to the supplied instance; execute() then calls its method.
+
+2.Consider model1 = AIModel("GPT", 0.5). What is the difference between the AIModel class and model1? What does self refer to inside __init__()?
+my answer :
+AIModel is class which defines the structure and behavior of object
+Model1 is instance of class - object
+inside __init__(), self refers to the particular instance being initialized. 
+
+3.Why does this setter cause infinite recursion, and how should you store the value instead?
+@temperature.setter
+def temperature(self, value):
+    self.temperature = value
+my answer : when we __init__ the instance value self.temperature  = value which setter takes from __init__ validates the value 
+when updating with validation runs and recursively repeats and getter never displays
+I use self._temperature = value  for getter an setter and self.temperature = value in __init__
+professional answer:
+In __init__(), assigning self.temperature = value invokes the setter, so validation runs.
+Inside the setter, assigning self.temperature = value again invokes the same setter recursively.
+The getter does not cause this recursion; the setter does.
+store the validated value in self._temperature, and expose it through the temperature property.
+
+4.A child class inherits from AIModel. Why might it call super().__init__(name, temperature)? What does super() not do automatically?
+my answer : super helps to we get behavior traits of values but not the values of parent object itself. 
+professional answer :
+super().__init__(name, temperature) calls the next initializer in the method resolution order (usually the parent initializer in single inheritance). That initializer can set up attributes on the same child instance.
+
+5.What does this print, and why?
+class Parent:
+    def run(self):
+        return "Parent"
+
+class Child(Parent):
+    pass
+
+print(Child().run())
+
+my answer : Parent
+
+6.Can an AIApplication execute an object that does not inherit from AIModel? State the condition that must be satisfied.
+my answer : Yes it can execute the model that doesn't inherit from AIModel because composition only needs object that holds the instance
+professional answer :
+An application can accept a non-AIModel object if it stores that object and the object provides a compatible run() method.
+class CustomModel:
+    def run(self):
+        return "Custom prediction"
+app = AIApplication(CustomModel())
+If AIApplication.execute() calls self.model.run(), this works without inheritance. That is duck typing: relying on supported behavior rather than a required class identity.
+
+7.Predict the output of this code. Explain why each value appears.
+class AIModel:
+    framework = "Python"
+    def __init__(self, name):
+        self.name = name
+model1 = AIModel("GPT")
+model2 = AIModel("BERT")
+model1.framework = "PyTorch"
+AIModel.framework = "Java"
+print(model1.framework)
+print(model2.framework)
+print(model1.name)
+print(model2.name)
+my answer :
+PyTorch - model1.framework = "PyTorch" created a attribute in model1 instance
+Java - AIModel.framework = "Java" updated the framework class attribute 
+GPT - model1 = AIModel("GPT") - model1 instance is created with name attribute 'GPT'.each object form separate name space
+BERT - model2 = AIModel("BERT") - model2 instance is created with name attribute 'BERT' . each object form separate name space
+#lookup rule:
+'''Python checks the instance first, then its class. Assigning model1.framework = "PyTorch" shadows the class attribute for that instance;
+ changing AIModel.framework does not overwrite that instance-specific value.
+'''
+
+8.What is wrong with this code? Explain the cause and fix it.
+class AIModel:
+    def __init__(self, name):
+        self.name = name
+
+class TextModel(AIModel):
+    def __init__(self, name, max_tokens):
+        self.max_tokens = max_tokens
+
+model = TextModel("GPT", 100)
+print(model.name)
+my answer :
+here TextModel inherits the AIModel,TextModel has initializer def __init__(self, name, max_tokens): but it not using super for name attribute which is parent.
+this make it to loss behavior traits of parent on attribute
+code correction
+class TextModel(AIModel):
+    def __init__(self, name, max_tokens):
+        super().__init__(name)
+        self.max_tokens = max_tokens
+#the child doesn't lose the parent's behavior entirely. It still inherits methods it hasn't overridden. The problem is that its initializer fails to establish the name attribute.
+professional answer :
+TextModel defines its own __init__(), so Python does not automatically call AIModel.__init__() for it. Without super().__init__(name), self.name is never created.
+
+9.class AIModel:
+    pass
+
+class TextModel(AIModel):
+    pass
+
+class EmbeddingModel(AIModel):
+    pass
+
+text = TextModel()
+embedding = EmbeddingModel()
+
+Predict the result of each expression:
+isinstance(text, AIModel)
+isinstance(embedding, AIModel)
+isinstance(text, EmbeddingModel)
+
+my answer :
+True, TextModel inherits from AIModel.
+True,EmbeddingModel inherits from AIModel.
+false,TextModel and EmbeddingModel are sibling subclasses.
+#isinstance() checks an object's actual type and inheritance hierarchy. It does not check whether the class defines its own initializer or attributes.
+
+10.Write a small AIApplication class that:
+1. Accepts any model object and stores it.
+2. Has an execute() method that calls the object's run() method and returns the result.
+3. Works with a CustomModel that does not inherit from AIModel.
+my answer :
+class AIApplication:
+    def __init__(self,model):
+        self.model = model
+    
+    def execute(self):
+        return self.model.run()
+class CustomModel:
+    def run(self):
+        return "Custom prediction"
+
+app = AIApplication(CustomModel())
+print(app.execute())  # Custom prediction
+
+11.You have these two relationships:
+- TextModel is a kind of AIModel.
+- AIApplication uses an AIModel to make predictions.
+Which relationship is inheritance, and which is composition? Explain why they should not be reversed.
+my answer :
+TextModel is a kind of AIModel. - inheritance - TextModel class  holds the behavior and structure  of the AIModel
+ AIApplication uses an AIModel to make predictions. -composition - uses any object with executable function 
+profession answer :
+Explain why they should not be reversed.
+They should not be reversed because these relationships express different things. A text model is a kind of AI model; 
+an application has or uses a model. Composition also lets you replace the model without redesigning the application.
+
+
+'''
+Inheritance models an “is-a” relationship. Composition models a “has-a” or “uses-a” relationship. 
+Composition makes an application flexible because it depends on an object's expected behavior rather than requiring its own logic to be rewritten for every model.
+'''
