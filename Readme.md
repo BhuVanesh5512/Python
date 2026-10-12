@@ -22,3 +22,6 @@ FileNotFoundError...
 
 --Day09 : In Python, what is modules, packages. their structure. __init__, __name__,__main__, safe guard of module,
 __pycache__,.pyc; bytecode, machine code difference 
+
+--Day10 : Python OOps - what are class object ; why we use __init__, self;class and object attributes;super()
+inheritance,polymorphism,overriding,composition,duck typing
