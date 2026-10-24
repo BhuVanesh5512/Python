@@ -25,3 +25,5 @@ __pycache__,.pyc; bytecode, machine code difference
 
 --Day10 : Python OOps - what are class object ; why we use __init__, self;class and object attributes;super()
 inheritance,polymorphism,overriding,composition,duck typing
+
+--Day11 : Python OOPs - Composition , DuckTyping, Dependency Injection, Separation of responsibilities
