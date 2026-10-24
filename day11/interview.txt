@@ -1,0 +1,314 @@
+1. 
+i.If you replace model 1 with Model 2 when constructing composition, which class needs to change, and why?
+my answer : There is no need to change any class ,composition class which only take object instance and passes to another ,
+If class has compatible method and arguments of method in it.
+#dependency injection lets the caller choose the model, while duck typing lets the application use objects with compatible behavior
+
+ii. Suppose Model defines different method  instead of one with composition. What happens when composition class executes  method calls it? Explain.
+my answer :
+Python raises an AttributeError with model ; 
+because no attribute in given model which is supposed to be executed by composition class.
+#duck typing does not mean every object works automatically. It must provide the interface the caller expects.
+
+iii. What is the difference between composition and inheritance?
+my answer :
+Inheritance is used to inherit the behavior and structure from parent class to child class 
+where as composition is class where it takes the objects instance and passes it another and execute the compatible methods in it
+Professional answer :
+Inheritance: a child class derives behavior or attributes from a parent class—an is-a relationship.
+Composition: an object holds or uses other objects to do its work—often described as a has-a relationship.
+
+iv. Why should empty-prompt validation happen before calling the model?
+my answer : To reduce useless api calls and reduce cost and valid inputs
+#validate the prompt before invoking the model to reject invalid input early and avoid unnecessary API calls and costs.
+
+v. What does self.model = model do? Does it copy the object?
+my answer : No, It create a local variable in model. In composition class model takes the instance of object
+Professional answer :
+model is a parameter, a local name inside __init__.
+self.model is an attribute on the composition instance.
+The assignment makes that attribute refer to the same object as the parameter.
+Both references point to the same instance.
+
+Vi. Complete this interview sentence in your own words: “Duck typing allows AIApplication to use different model classes as long as…”
+my answer : 
+compatible method and arguments in method of class which is running
+Professional answer :
+“Duck typing allows AIApplication to use different model objects as long as they provide the methods and behavior the application expects, regardless of their inheritance hierarchy.”
+
+2.
+Imagine you're developing an AI application that can use different models.
+class AIApplication:   
+     def __init__(self):        
+        self.model = TextModel()    
+    def execute(self, prompt):        
+        return self.model.run(prompt)
+“What design problem do you see in this implementation, and how would you improve it so the application can use TextModel, EmbeddingModel, or FakeModel without modifying the AIApplication class?”
+Explain:
+1. What is the problem with the current design?
+2. What concept would you use to solve it?
+3. Show the improved code for AIApplication.
+
+my answer : 
+It only be able to run TextModel and limit the operations of composition , I given model in dynamic as an argument 
+class AIApplication:
+    def __init__(self,model):
+        self.model = model
+     def execute(self, prompt):        
+        return self.model.run(prompt)
+
+app = AIApplication(TextModel())
+app2 = AIApplication(EmbeddingModel())
+app3 = AIApplication(FakeModel())
+professional answer :
+here,
+It tight coupling to TextModel.I would use dependency injection to reduce tight coupling. Instead of constructing TextModel inside AIApplication,
+I would pass the model object into its constructor. The application then depends on the expected run(prompt) behavior, rather than a specific model implementation.
+dependency injection describes how the dependency is supplied; composition describes the relationship where AIApplication holds and uses the model object.
+
+3. “Your TextModel, EmbeddingModel, and FakeModel do not inherit from a common parent class.
+ Why can AIApplication still use all three? What would happen if FakeModel implemented predict(prompt) instead of run(prompt)?”
+ Explain both parts in your own words. You may include a short code example.
+my answer :
+AIApplication is composition class which allow flexibility by passing object instance to another.
+If FakeModel implements predict(prompt) instead of run(prompt) then python raises AttributeError. 
+professional answer :
+Python supports duck typing, so AIApplication can work with unrelated classes as long as they provide the expected run(prompt) behavior.
+ A shared parent class is not required.If AIApplication calls self.model.run(prompt) but FakeModel only defines predict(),
+  Python raises AttributeError because the requested method is missing.
+Composition: one object holds or uses another object.
+Dependency injection: an object receives its dependency from outside.
+Duck typing: compatible behavior allows objects of different classes to be used interchangeably.
+
+4.Which class uses inheritance, and which class uses composition?
+If TextModel inherits from AIModel, why does AIApplication still receive a model object instead of inheriting from AIModel itself?
+What is the output of AIApplication(TextModel()).execute("Hello")? Explain why.
+class AIModel:
+    def run(self, prompt):
+        return f"Running: {prompt}"
+class TextModel(AIModel):
+    pass
+class AIApplication:
+    def __init__(self, model):
+        self.model = model
+    def execute(self, prompt):
+        return self.model.run(prompt)
+
+my answer :
+TextModel class uses inheritance (AIModel is parent class ) while AIApplication is a composition class.
+TextModel class inherits the Parent class AIModel structure and behavior. can form its on object but all parent behavior trends and passes to AIApplication without inheritance due to ducktyping and dependency injection
+Running : Hello ; ducktyping in composition class take model instance and runs run method as there is no run method in TextModel class python looks at it parent and runs thee run method and outputs return it is than printed
+"""
+Inheritance makes TextModel inherit run() from AIModel.
+Composition lets AIApplication hold a reference to a model instance.
+Dependency injection lets the caller choose which model instance to provide.
+Duck typing lets AIApplication use an object that supports the expected run(prompt) behavior.
+"""
+
+5.
+class PromptProcessor:
+    def clean_prompt(self, prompt):
+        prompt = prompt.strip()
+        if not prompt:
+            raise ValueError("Prompt cannot be empty")
+        return prompt
+class FakeModel:
+    def predict(self, prompt):
+        return f"Fake result: {prompt}"
+class AIApplication:
+    def __init__(self, processor, model):
+        self.processor = processor
+        self.model = model
+    def execute(self, prompt):
+        cleaned = self.processor.clean_prompt(prompt)
+        return self.model.run(cleaned)
+app = AIApplication(PromptProcessor(), FakeModel())
+print(app.execute("  Hello  "))
+
+i.What exception occurs, and on which line?
+my answer : attribute error in return self.model.run(cleaned)
+#FakeModel has predict() but no run() method. Python raises AttributeError when it attempts to look up run on the FakeModel instance.
+ii.What is the smallest change that fixes the problem?
+my answer :by changing the method name in FakeModel to run or defining another method with name run in FakeModel (argument prompt)
+iii.Should we change AIApplication to call predict() or change FakeModel to implement run()? Explain your choice and when the other option might make sense.
+my answer :change FakeModel to implement run() because run() in composition AIApplication class method execute is ducktyped 
+other options are to define another run method in FakeModel or define another ducktyped method  in AIApplication class or by changing the method name in FakeModel to run
+professional answer :
+The failure is an interface mismatch. AIApplication delegates to self.model.run(), but FakeModel only defines predict().
+ I would make FakeModel implement run() to preserve the interface expected by the application. 
+If I needed to integrate a third-party model with a different API, I might use an adapter.
+
+6.Consider this code:
+class PromptProcessor:
+    def clean_prompt(self, prompt):
+        cleaned = prompt.strip()
+        if not cleaned:
+            raise ValueError("Prompt cannot be empty")
+        return cleaned
+class FakeModel:
+    def run(self, prompt):
+        print("Model was called")
+        return f"Result: {prompt}"
+class AIApplication:
+    def __init__(self, processor, model):
+        self.processor = processor
+        self.model = model
+    def execute(self, prompt):
+        cleaned = self.processor.clean_prompt(prompt)
+        return self.model.run(cleaned)
+try:
+    result = app.execute("   ")
+except ValueError as err:
+    print(err)
+assume app has created
+i.What exactly gets printed? Does "Model was called" appear?
+my answer :
+Prompt cannot be empty ,The model is never called. because Execution leaves clean_prompt() immediately. The following self.model.run(cleaned) line is never reached.
+The caller catches the exception and prints its message.
+ii.Why is validation performed before self.model.run(cleaned)?
+my answer : Validation helps to reduce invalid api calls and help to clean the prompt before the call.
+#Validation prevents invalid API calls and ensures the prompt is cleaned before the model receives it. This improves reliability and can reduce unnecessary API costs.
+
+iii.If we move the try/except inside AIApplication.execute(), what design trade-off might that introduce? Should the application always catch ValueError itself?
+my answer :
+if we move the try and except inside execute , It may never execute because it is defined after the return , may cause error and code crushes 
+professional answer :
+I would not automatically catch every ValueError inside AIApplication. Letting it propagate allows the caller to choose the appropriate response. 
+I would catch it inside the application only if the application has a clear recovery strategy or needs to translate the error into a meaningful application-level result
+"""
+valid prompts follow the normal return path.
+invalid prompt execute() catches the error, prints it, and returns None. 
+The caller can no longer distinguish an invalid prompt from a legitimate None result without additional conventions.
+->catching exceptions inside AIApplication can hide errors from callers and mix application logic with presentation or error-handling policy.
+ Often, it's better to let ValueError propagate and let the caller decide whether to display a message, retry, or stop.
+ """
+7. class FakeModel:
+    def __init__(self):
+        self.calls = 0
+
+    def run(self, prompt):
+        self.calls += 1
+        return f"Result: {prompt}"
+model = FakeModel()
+app1 = AIApplication(PromptProcessor(), model)
+app2 = AIApplication(PromptProcessor(), model)
+app1.execute("Hello")
+app2.execute("World")
+print(model.calls)
+print(app1.model is app2.model)
+i.What is the output of print(model.calls) and why?
+my answer :2 , Both AIApplication composition instance takes the same model instance 
+ii.What is the output of print(app1.model is app2.model) and why?
+True ,Both applications receive the same model reference
+#Compare the exact objects named on each side of is. Don't infer their identity from the objects that contain them
+iii.If we wanted app1 and app2 to have independent call counters, what would we change?
+change the model instance by initiating the new instance for FakeModel
+
+8.Now imagine you are testing an application that normally calls an expensive external AI API.
+class AIApplication:
+    def __init__(self, processor, model):
+        self.processor = processor
+        self.model = model
+    def execute(self, prompt):
+        cleaned = self.processor.clean_prompt(prompt)
+        return self.model.run(cleaned)
+i.Why is injecting a FakeModel useful when testing AIApplication?
+my answer : Helps to avoid un-necessary api calls by implementing all invalid test on it
+professional answer :
+A FakeModel lets you test the behavior of AIApplication without calling a real AI service. 
+You can supply predictable results, simulate failures, and check how your application handles them.
+#The fake model is not just for invalid cases. It can test valid inputs, expected outputs, and error-handling paths.
+ii.Does passing all your tests with FakeModel prove that the real AI API integration works correctly? Why or why not?
+my answer : No It does't prove that the real api integration works correctly unless implemented with valid cases as validation stops the invalid cases
+professional answer :
+Even if you test many valid and invalid cases with FakeModel, that still doesn't prove the real API integration works. 
+The fake model does not exercise the actual network request, authentication, API request format, provider response format, rate limits, or external service failures.
+#Unit tests with a fake dependency verify your application's logic.Integration tests verify that connected components work together.
+Write a small FakeModel class and a test that checks that executing "  Hello  " returns "Fake result: Hello".
+class FakeModel :
+    def run(self,prompt):
+        return f"Fake result: {prompt}"
+app = AIApplication(PromptProcessor(),FakeModel())
+try :
+    print(app.execute("  Hello  "))
+except ValueError as err:
+    print(err)
+
+9.
+You're building a maintainable AI application. 
+Explain the responsibilities of PromptProcessor, AIApplication, and the model class. 
+Then describe how you would test this system and ensure that adding a new model doesn't require modifying AIApplication.
+my answer :
+PromptProcessor : It is validation class which is used to clean and raise exception on invalid inputs , used for avoiding the unnecessary api calls
+AIApplication : It is composition class which helps to pass object instance to another, uses ducktyping method used to run different method with compatible method and arguments
+model class  : It is object reference of the method which is passed to composition class here
+By creating a Fake Model and implementing required test cases and using a single executable method throughout the classes 
+
+Professional answer :
+**PromptProcessor — input preparation and validation**
+`PromptProcessor` is responsible for cleaning and validating user input.
+For example, it can remove leading and trailing whitespace and raise a `ValueError` if the prompt is empty. 
+Validating before invoking the model prevents unnecessary API calls for invalid input.
+**AIApplication — orchestration**
+`AIApplication` coordinates the application. 
+It passes the prompt to `PromptProcessor`, receives the cleaned prompt, and delegates execution to the supplied model.
+ It uses dependency injection because the processor and model are provided from outside rather than created internally.
+**Model class — model-specific behavior**
+The model class implements the operation required by the application, such as `run(prompt)`. 
+Different implementations can use different model providers or behavior while following the same interface.
+**Testing and extensibility**
+I would inject a fake model to test the application without making real API calls.
+I would test valid prompts, empty and whitespace-only prompts, the returned result, and whether the model receives the cleaned prompt. 
+I would also use assertions so test failures are detected automatically.
+To add a new model without modifying `AIApplication`, I would implement the same `run(prompt)` method in the new model and inject its instance. 
+This uses dependency injection, composition, and duck typing, reducing coupling and making the application easier to extend and test.
+
+"""
+design works in code
+class PromptProcessor:
+    def clean_prompt(self, prompt):
+        cleaned = prompt.strip()
+
+        if not cleaned:
+            raise ValueError("Prompt cannot be empty")
+
+        return cleaned
+
+
+class TextModel:
+    def run(self, prompt):
+        return f"Text response: {prompt}"
+
+
+class FakeModel:
+    def run(self, prompt):
+        return f"Fake response: {prompt}"
+
+
+class AIApplication:
+    def __init__(self, processor, model):
+        self.processor = processor
+        self.model = model
+
+    def execute(self, prompt):
+        cleaned = self.processor.clean_prompt(prompt)
+        return self.model.run(cleaned)
+
+processor = PromptProcessor()
+
+text_app = AIApplication(processor, TextModel())
+test_app = AIApplication(processor, FakeModel())
+
+assert text_app.execute("  Hello  ") == "Text response: Hello"
+assert test_app.execute("  Hello  ") == "Fake response: Hello"
+
+try:
+    test_app.execute("   ")
+except ValueError:
+    print("PASS: Invalid prompt rejected")
+else:
+    raise AssertionError("Expected ValueError")
+
+print("All tests passed")
+
+"""
