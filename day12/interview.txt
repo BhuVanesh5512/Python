@@ -1,0 +1,422 @@
+-> Why should we use with open() instead of manually opening and closing the file?
+We use a context manager through with open() to manage the file's lifecycle.
+ It guarantees that the file is properly closed when execution leaves the block, including when an exception occurs. 
+This prevents resource leaks
+->Suppose __exit__() returns True. Does it mean the exception never happened, or does it mean something else?
+Returning True from __exit__() suppresses the exception, preventing it from propagating beyond the context manager. 
+This should only be done when the context manager can safely handle or intentionally ignore that particular exception.
+
+1. 
+i.What is the difference between an iterable and an iterator?
+my answer : An iterable is an object we iterate over while 
+The Iterator is object that produces the next item when requested and remember the current position.
+professional answer :
+Iterable: An object capable of returning an iterator through iter().
+Iterator: An object that produces values one at a time through next() and maintains its iteration state.
+
+ii. Why does a generator function execute lazily?
+my answer : To reduces peak memory consumption the generator function executes lazily
+professional answer : 
+Generator functions execute lazily because their execution is suspended at each yield statement and resumes when the next value is requested.
+ This allows incremental processing and reduces peak memory consumption.
+
+iii. What is the difference between yield and return?
+my answer  : Yield produces the result one at a time and pauses before the next execution and remembers the current position in that generator
+Return exits the function and returns to the callback with result 
+#A return statement doesn't necessarily return to a callback. It returns control to the caller.
+professional answer :
+return terminates function execution and sends a result to the caller. 
+yield produces a value and suspends generator execution, preserving its state so that it can resume when another value is requested.
+
+iv. Why does zip() stop at the shortest iterable by default?
+my answer : To zip two iterable we need same number of element but not necessary as it checks the skips large iterable elements by taking short iterable length to combine
+professional answer : zip() combines corresponding elements from multiple iterables into tuples. 
+By default, it stops when the shortest iterable is exhausted, preventing incomplete pairs.
+
+v.Why is with open() combined with a generator useful for large AI datasets?
+my answer : With open used to skip manual closing of file and also it closes the file in the end weather an exception occurred  or execution finishes 
+It is useful for large ai dataset because it is efficient in cleanups.
+professional answer :
+Combining context managers with generators provides safe and memory-efficient data processing.
+ The context manager guarantees resource cleanup, while the generator reads and yields records incrementally. 
+This is particularly useful when processing large AI datasets.
+
+2.You are processing a dataset containing 5 million prompts.
+Developer A:
+def load_data(filename):
+    with open(filename, "r") as file:
+        return file.readlines()
+Developer B:
+def load_data(filename):
+    with open(filename, "r") as file:
+        for line in file:
+            yield line.strip()
+        
+i.Explain the difference between these implementations.
+my answer : 
+here, developer A is loading the entire 5 millions lines at a time which is not memory efficient and resources are used in ineffective way.
+while developer B is loading the file with a generator helps with yield to load data one line at a time and uses the memory efficiently and use resource effectively.
+#Developer B does not necessarily load exactly one line from the physical disk at a time. Python's file I/O uses buffering. However, it processes and yields records incrementally.
+steps of difference  :
+Developer A
+Reads all lines into a list.
+Stores all those lines in memory.
+Returns the complete list after reading the file.
+Memory consumption grows with the dataset size.
+Developer B 
+Creates a generator object when called.
+Reads lines incrementally when requested.
+Yields one processed line at a time.
+Does not require the entire dataset to be stored in memory.
+
+ii.Which would you choose for processing 5 million prompts, and why?
+my answer : I use Developer b to load the prompt effectively and use memory effectively.
+professional answer :
+For 5 million prompts, I would choose Developer B because it supports streaming and reduces peak memory consumption.
+
+iii.Does using a generator guarantee that the entire AI application will use less memory? Explain.
+my answer : Generator guarantee us the entire ai application will use less memory because it yields one line at a time.
+professional answer : 
+No. Generators provide lazy evaluation and allow incremental processing, reducing peak memory consumption in the data-loading stage.
+ However, the overall application's memory usage depends on downstream operations.
+ If generated values are accumulated in lists or other in-memory structures, memory consumption can still grow significantly."
+#A generator can reduce memory consumption in the part of the application that processes data incrementally. It does not guarantee that the entire application uses less memory.
+
+'''
+Generator	Produces values incrementally
+Lazy evaluation	Computes values when requested
+Streaming	Processes data progressively
+Memory efficiency	Avoids unnecessarily retaining large amounts of data'''
+
+3.Imagine you are reviewing this code:
+numbers = [10, 20, 30]
+
+iterator = iter(numbers)
+
+print(list(iterator))
+print(list(iterator))
+
+iterator2 = iter(numbers)
+
+print(list(iterator2))
+
+i.What will be the output of all three print() statements?
+my answer : [10, 20, 30]
+[]
+[10, 20, 30]
+
+ii.Why does the second list(iterator) produce a different result from the first?
+my answer : the iter runs through list of iterables and produces the first output ; calling it again doesn't reset to starting point so, it giving empty list in second output
+
+iii.Why does iterator2 produce values again even though iterator has already been exhausted?
+my answer : reassigning the iter makes it a fresh memory so it produce the same output as before.
+
+4.You are building an AI preprocessing pipeline.
+prompts = ["Hello", "How are you?", "Explain Python"]
+labels = ["greeting", "question"]
+
+paired_data = zip(prompts, labels)
+
+print(list(paired_data))
+print(list(paired_data))
+
+i.What will the first print() output? Why?
+my answer : [("Hello","greeting"),("How are you?","question")] - zip combines shortest exhausted iterable
+
+ii.What will the second print() output? Why?
+my answer :
+[] - as zip is exhausted in before list and call gives the next which is empty
+#An iterator maintains its position and does not automatically restart after exhaustion.
+
+iii.Why does zip() stop at the shortest iterable? Does it skip the remaining elements of the longer iterable?
+my answer :
+No,zip() combines corresponding elements from multiple iterables into tuples. By default, it stops when the shortest iterable is exhausted, preventing incomplete pairs
+
+iv.If you need to process every prompt, even when some prompts have no corresponding label, which Python tool would you consider, and why?
+my answer : ?
+professional answer :
+Python provides a function in the itertools module that can continue until the longest iterable is exhausted. with zip_longest
+None is inserted as a placeholder for the missing label.
+
+5.Consider this code:
+class DatabaseConnection:
+    def __enter__(self):
+        print("Database connected")
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        print("Database disconnected")
+        return False
+
+
+with DatabaseConnection() as db:
+    print("Executing query")
+    raise ValueError("Invalid query")
+
+i.What will be the exact output?
+my answer: 
+Database connected 
+Executing query
+Database disconnected
+ValueError : Invalid query raised
+
+ii.Will __exit__() execute even though a ValueError occurs?
+my answer :yes, exit will execute even when the value error occurs, and allows the file to close/closes the file before exception
+#__exit__() provides deterministic resource cleanup when leaving a context.
+
+iii.What are exc_type, exc_value, and traceback receiving in this situation?
+my answer : exc_type: exception type ; exe_value : exception value and traceback of where it occur.
+'''Parameter	Receives
+exc_type	Exception class, such as ValueError
+exc_value	Exception instance, such as ValueError("Invalid query")
+traceback	Traceback object containing execution traceback information'''
+professional conceptional answer :
+exc_type = ValueError
+exc_value = ValueError("Invalid query")
+traceback = <traceback object>
+
+iV.Why does __exit__() return False? What would happen if it returned True instead?
+my answer : If exit return true it can suspends the exception and we never see what exception erupted and it will be a bug 
+some can be ignored by specification . So, we use false to pass exception after the file closes
+#Professional rule: Suppress exceptions only when the application has a deliberate and well-defined reason to treat them as non-fatal.
+'''
+Returning False
+Exception propagates
+1. Exception occurs.
+2. __exit__() executes cleanup.
+3. Returns False.
+4. Exception propagates outside the with block.
+Returning True
+Exception suppressed
+1. Exception occurs.
+2. __exit__() executes cleanup.
+3. Returns True.
+4. Exception is suppressed and execution continues after the with block.'''
+
+6.Consider:
+def read_prompts(filename):
+    with open(filename, "r", encoding="utf-8") as file:
+        print("File opened")
+
+        for line in file:
+            yield line.strip()
+
+        print("File processing completed")
+prompts = read_prompts("prompts.txt")
+print("Generator created")
+first = next(prompts)
+print(first)
+Assume prompts.txt contains:
+Hello
+Explain Python
+Build an AI application
+
+i.What is the exact output? Explain the execution sequence.
+my answer : 
+Generator created
+File opened
+Hello
+sequence 
+prompts = read_prompts("prompts.txt") -> prints Gernerator created->open file by running generator -> File opened -> yeild line 
+
+ii.When is the file actually opened: when read_prompts() is called or when next(prompts) is called? Why?
+my answer : next(prompts) , because generator is assigned for use and by using next we can execute the generator
+#Because generator functions use lazy execution.Generator creation does not execute the function body.Requesting a value starts or resumes execution.
+
+iii.At the end of this code, is the file still open or closed? Explain.
+my answer : 
+file will be closed with with help but the execution of prompts generator object is paused in first line so, generator can be yield next line in  next next operation.
+profession answer :
+The file is still open.with guarantees cleanup when its block exits, not immediately when yield suspends execution.
+The generator is suspended.
+The with block is still active.
+The file is still open.
+The generator can resume and read the next line.
+
+iv.Suppose we never request another item using next(). Will "File processing completed" be printed?
+my answer : NO, As the loop is pause execution is paused in it and the line File processing completed is not printed.
+
+7.You are validating prompts before sending them to an AI model.
+Consider:
+prompts = ["Hello", "Explain Python", "", "Build an AI app"]
+result = all(prompt.strip() for prompt in prompts)
+print(result)
+
+i.What will be the output? Explain why.
+my answer : false, as all check where all are valid prompts and as '""' makes False there is no value in it.
+#all() requires every generated value to be truthy. The empty string makes the condition fail.
+
+ii.Does all() evaluate every prompt, or does it stop somewhere? Explain short-circuit evaluation.
+my answer : It stop at invalid false prompt. As all is used to check where all are valid or not.
+#This is called short-circuit evaluation: evaluation stops as soon as the final result is already determined.
+
+iii.What would happen if we replaced all() with any()?
+my answer : the output is true. any helps to at least one true
+
+iv.
+print(all([])) #true 
+print(any([])) #false
+Explain why all([]) is True even though there are no elements to validate.
+my answer :
+As a empty value is always true
+professional answer :
+"all() returns True for an empty iterable because there are no elements that make the condition false. any() returns False because there are no elements that make the condition true. This behavior is known as vacuous truth."
+
+8.You are preparing training data for an AI application.
+prompts = ["Hello", "Explain Python", "Build an AI app"]
+labels = ["greeting", "question"]
+
+for index, (prompt, label) in enumerate(zip(prompts, labels), start=1):
+    print(index, prompt, label)
+
+i.What is the exact output?
+my answer :
+1 Hello, greeting
+2 Explain Python, question
+#The print() function receives three separate arguments, so it prints them separated by spaces, not inside parentheses.
+
+ii.What does enumerate() add to the result of zip()?
+my answer :
+enumerate() used to retrieve index and value. enumerate here helps to retrieve the index and value in zip() combined result
+
+iii.Why does the loop execute only twice, even though prompts contains three elements?
+my answer : by default zip uses the short exhausted so zip() combined result contain 2 elements in it and loop run only twice
+#zip() stops when the shortest input iterable is exhausted, so it produces only two pairs.
+
+iv.What would change if we used start=0 instead of start=1?
+my answer : It change index to start from 0 where as now with start = 1 it is started in 1 
+#enumerate() starts at zero by default. start=1 changes the starting index to one.
+
+v.In a real AI data pipeline, why might pairing prompts with the wrong labels be a serious problem?
+my answer : It will send invalid prompts and may give invalid results
+professional answer :
+Incorrect prompt-label pairing corrupts the training dataset. In supervised learning, the model learns from the relationship between inputs and labels. 
+If those relationships are wrong, the model may learn incorrect patterns, resulting in poor predictions and reduced model accuracy.
+
+9.You are validating prompts before sending them to an AI model.
+def generate_prompts():
+    prompts = ["Hello", "Explain Python", "", "Build an AI app"]
+
+    for prompt in prompts:
+        print("Checking:", prompt)
+        yield prompt.strip()
+
+
+prompt_generator = generate_prompts()
+
+result = all(prompt_generator)
+
+print("All valid:", result)
+
+remaining = list(prompt_generator)
+print("Remaining:", remaining)
+
+i.What is the exact output? Write it in execution order.
+Checking: Hello
+Checking: Explain Python
+Checking: 
+All valid: False
+Checking: Build an AI app
+Remaining: ['Build an AI app']
+sequence :
+prompt_generator line creates generator by generate_prompts() ->
+print(result) executes the generator and because of all it stops the execution in invalid prompt->
+remaining continues the paused result and lists it in remaining -> prints it
+
+ii.Why does all() return False
+my answer : all() requires every generated value to be truthy. The empty string makes the condition fail.
+
+iii.Does all() consume the entire generator? Explain precisely.
+my answer : No, It doesn't consume the entire generator, evaluation stops as soon as the final result is already determined.
+#all() consumes values from the iterator until it encounters the first falsy value or reaches exhaustion. Because it short-circuits, it may leave the iterator partially consumed.
+
+iv.Why is remaining an empty list?
+my answer :
+No remaining is not a empty list.remaining continues where the paused result.
+professional answer :
+No remaining is not a empty list, The generator was not exhausted. all() stopped at the empty string, leaving the generator suspended. list() resumed it and collected the remaining value.
+
+
+v.Suppose you wanted to validate every prompt and also keep all cleaned prompts for later processing. 
+How would you change this code?
+professional code :
+def process_prompts(prompts):
+    cleaned_prompts = []
+    all_valid = True
+
+    for prompt in prompts:
+        cleaned = prompt.strip()
+        cleaned_prompts.append(cleaned)
+
+        if not cleaned:
+            all_valid = False
+
+    return cleaned_prompts, all_valid
+
+
+prompts = ["Hello", "Explain Python", "", "Build an AI app"]
+
+cleaned, valid = process_prompts(prompts)
+
+print("Cleaned:", cleaned)
+print("All valid:", valid)
+
+10.You are building an AI application that reads prompts from a file, cleans them, validates them, and sends valid prompts to a model.
+Consider:
+def read_prompts(filename):
+    with open(filename, "r", encoding="utf-8") as file:
+        for line in file:
+            prompt = line.strip()
+
+            if not prompt:
+                continue
+
+            yield prompt
+
+
+def send_to_model(prompt):
+    print("Sending to AI:", prompt)
+
+
+def run_pipeline(filename):
+    for prompt in read_prompts(filename):
+        send_to_model(prompt)
+
+i. Why is yield used inside read_prompts() instead of returning a list? 
+my answer : For lazy execution and efficient processing we use generators and manage memory consumption.
+'''
+return list_of_prompts creates and returns the complete collection.
+yield prompt produces one prompt at a time, suspending the generator until the next value is requested.
+'''
+
+ii.At what point does the file open, and when does it close?
+my answer : In for loop execution  when file name is send and start execution of loop and file closes when the generator exits the with block.
+#Generator creation is not generator execution. The first request for a value starts execution.
+
+iii.What happens if the consumer stops processing after the first prompt? Discuss the generator and file lifecycle.
+my answer :
+file will be opened and only one prompt will send to model 
+#The file's with block is still active, so the file remains open while the generator is suspended and alive.
+
+professional answer :
+If the consumer stops after the first prompt, the generator is suspended at the yield statement, and the file may remain open until the generator is closed or finalized.
+
+iv.Explain the responsibility of each function. Why is separating these responsibilities useful?
+my answer :
+read_prompts : reading from file and cleaning
+run_pipeline : run functions 
+send_to_model : a function design to send prompt to model
+separation of responsibilities is most important in function modelling because every function need to handle one responsibility and need to be simple and readable and less complex.
+#each component has a focused responsibility, making the system easier to test, maintain, extend, and debug.
+
+professional answer :
+Each function has a separate responsibility: reading and cleaning, sending prompts to the model, and orchestrating the pipeline. This separation improves testability and maintainability.
+
+v.Suppose the file contains 5 million prompts. Explain how this design helps memory efficiency, and mention one limitation or risk that a production engineer should consider.
+my answer : consumer can stop when ever he wants .memory consumption increases as the process grows.each function handling each responsibility separately.
+memory consumption grows as the processes increases.
+professional answer :
+The design can keep memory usage relatively stable because it processes one prompt at a time. However, production systems must also consider resource cleanup, API rate limits, retries, batching, and downstream memory accumulation.
+
+
+
