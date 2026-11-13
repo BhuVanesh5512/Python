@@ -27,3 +27,5 @@ __pycache__,.pyc; bytecode, machine code difference
 inheritance,polymorphism,overriding,composition,duck typing
 
 --Day11 : Python OOPs - Composition , DuckTyping, Dependency Injection, Separation of responsibilities
+
+--Day12 : PYthon - context-manager, Generators, Zip, All, Any, enumerate 
